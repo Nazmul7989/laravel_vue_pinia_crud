@@ -3,8 +3,8 @@
     <div class="row">
       <div class="col-8">
         <div class="card p-4">
+          <h3 class="card-title text-center">Post List</h3>
           <table class="table table-bordered">
-            <h3 class="card-title text-center">Post List</h3>
             <thead>
             <tr>
               <th>Id</th>
@@ -14,13 +14,17 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>01</td>
-              <td>Post One</td>
-              <td>Post Description</td>
+            <tr v-for="post in posts" :key="post.id">
+              <td>{{ post.id }}</td>
+              <td>{{ post.name }}</td>
+              <td>{{ post.description }}</td>
               <td style="width: 150px;">
-                <button class="btn btn-sm btn-warning">Edit</button>
-                <button class="btn btn-sm btn-danger ms-2">Delete</button>
+                <button @click.prevent="editPostData(post)"
+                        class="btn btn-sm btn-warning">Edit
+                </button>
+                <button onclick="confirm('Do you want to delete?') || event.stopImmediatePropagation()"
+                        @click.prevent="deletePostData(post.id)"
+                        class="btn btn-sm btn-danger ms-2">Delete</button>
               </td>
             </tr>
             </tbody>
@@ -29,20 +33,29 @@
       </div>
       <div class="col-4">
         <div class="card shadow p-4">
-          <h3 class="card-title">Create Post</h3>
+          <h3 class="card-title">{{ edit ? 'Edit' : 'Create' }} Post</h3>
           <form>
             <div class="form-group mb-3">
               <label for="name">Post Name</label>
-              <input type="text" class="form-control" id="name"
+              <input type="text" v-model="formData.name" class="form-control"
+                     id="name"
                      placeholder="Post name">
             </div>
             <div class="form-group mb-3">
               <label for="description">Post Description</label>
-              <textarea class="form-control" id="description"
+              <textarea class="form-control" v-model="formData.description"
+                        id="description"
                         placeholder="Post description"></textarea>
             </div>
             <div class="form-group">
-              <button type="button" class="btn btn-sm btn-success">Save</button>
+              <button v-if="edit" type="button" @click.prevent="updatePostData"
+                      class="btn btn-sm
+                      btn-success">{{ loading ? 'Updating...' : 'Update'}}
+              </button>
+              <button v-else type="button" @click.prevent="addPostData"
+                      class="btn btn-sm
+                      btn-success">{{ loading ? 'Saving...' : 'Save'}}
+              </button>
             </div>
           </form>
         </div>
@@ -52,8 +65,54 @@
 </template>
 
 <script>
+import {mapActions, mapGetters} from "pinia";
+import {usePostStore} from "@/store/postStore";
+
 export default {
   name: 'Post',
+  data(){
+    return{
+      formData: {
+        name: '',
+        description: '',
+      },
+      postId: '',
+      edit: false,
+    }
+  },
+  computed: {
+    ...mapGetters(usePostStore,['posts']),
+    ...mapGetters(usePostStore,['loading']),
+
+  },
+  mounted() {
+    this.getPosts();
+  },
+  methods: {
+    ...mapActions(usePostStore,['getPosts']),
+    ...mapActions(usePostStore,['storePost']),
+    ...mapActions(usePostStore,['updatePost']),
+    ...mapActions(usePostStore,['deletePost']),
+
+    addPostData(){
+      this.storePost(this.formData);
+    },
+    editPostData(post){
+      this.edit = true;
+      this.postId = post.id;
+      this.formData.name = post.name;
+      this.formData.description = post.description;
+    },
+
+    updatePostData(){
+      this.updatePost(this.formData,this.postId)
+    },
+
+    deletePostData(id){
+      this.deletePost(id)
+    }
+
+  }
 
 }
 </script>
