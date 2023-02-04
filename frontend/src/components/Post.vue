@@ -96,6 +96,7 @@ export default {
 
     addPostData(){
       this.storePost(this.formData);
+      this.clearForm();
     },
     editPostData(post){
       this.edit = true;
@@ -105,11 +106,19 @@ export default {
     },
 
     updatePostData(){
-      this.updatePost(this.formData,this.postId)
+      this.updatePost(this.formData,this.postId);
+      this.clearForm();
     },
 
     deletePostData(id){
       this.deletePost(id)
+    },
+    clearForm(){
+      this.formData.name = '';
+      this.formData.description = '';
+      this.postId = '';
+      this.edit = false;
+
     }
 
   }

@@ -22,9 +22,9 @@ export const usePostStore = defineStore('posts', {
         },
         storePost(formData){
             this.loadingData = true
-            axios.post('http://127.0.0.1:8000/api/posts',formData).then((res)=>{
+            axios.post('http://127.0.0.1:8000/api/posts',formData).then(()=>{
                 this.loadingData = false;
-                console.log(res.data)
+                this.getPosts();
             }).catch((error)=>{
                 this.loadingData = false;
                 alert(error.response.data.message);
@@ -32,9 +32,9 @@ export const usePostStore = defineStore('posts', {
         },
         updatePost(formData,id){
             this.loadingData = true
-            axios.put('http://127.0.0.1:8000/api/posts/' + id,formData).then((res)=>{
+            axios.put('http://127.0.0.1:8000/api/posts/' + id,formData).then(()=>{
                 this.loadingData = false;
-                console.log(res.data)
+                this.getPosts();
             }).catch((error)=>{
                 this.loadingData = false;
                 alert(error.response.data.message);
@@ -42,9 +42,9 @@ export const usePostStore = defineStore('posts', {
         },
         deletePost(id){
             this.loadingData = true
-            axios.delete('http://127.0.0.1:8000/api/posts/' + id).then((res)=>{
+            axios.delete('http://127.0.0.1:8000/api/posts/' + id).then(()=>{
                 this.loadingData = false;
-                console.log(res.data)
+                this.getPosts()
             }).catch((error)=>{
                 this.loadingData = false;
                 alert(error.response.data.message);
